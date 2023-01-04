@@ -1,10 +1,10 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { getUser, register, login, saveUser } from "../apis/auth.js";
+import { getUser, register, login, saveUser, logout } from "../apis/auth.js";
 import { changeUser } from "../apis/user.js";
 
 export const useUserStore = defineStore("user", () => {
-  const user = ref(getUser() || {});
+  const user = ref({});
   const showPostModal = ref(false);
   const showPostDetail = ref(false);
 
@@ -18,6 +18,11 @@ export const useUserStore = defineStore("user", () => {
     user.value = user;
   };
 
+  const logoutUser = () => {
+    logout();
+    user.value = {};
+  };
+
   const changeShowPostModal = (bool) => {
     showPostModal.value = bool;
   };
@@ -26,25 +31,25 @@ export const useUserStore = defineStore("user", () => {
     showPostDetail.value = bool;
   };
 
-  const uploadUser = (user) => {
+  const uploadUser = (uploadedData) => {
     // const uploadedUser = await changeUser(user)
     // user.value = uploadedUser
 
     const updateUser = {
-      avatar: user.avatar,
+      avatar: uploadedData.avatar,
       blocked: false,
       confirmed: true,
       createdAt: new Date(),
       email: "",
-      gender: user.gender,
+      gender: uploadedData.gender,
       id: Math.random(),
-      intro: user.intro,
-      mobilePhone: user.mobilePhone,
-      name: user.name,
+      intro: uploadedData.intro,
+      mobilePhone: uploadedData.mobilePhone,
+      name: uploadedData.name,
       provider: "local",
       updatedAt: new Date(),
-      username: user.username,
-      website: user.website,
+      username: uploadedData.username,
+      website: uploadedData.website,
     };
     user.value = updateUser;
     saveUser(updateUser);
@@ -56,6 +61,7 @@ export const useUserStore = defineStore("user", () => {
     showPostDetail,
     registerUser,
     loginUser,
+    logoutUser,
     changeShowPostModal,
     changeShowPostDetail,
     uploadUser,

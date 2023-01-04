@@ -14,6 +14,7 @@ export const usePostStore = defineStore("post", () => {
   });
   const isLike = ref(false);
   const isFavorite = ref(false);
+  const searchResult = ref(null);
 
   const uploadPost = async ({ image, description }) => {
     // await createPost(image, description);
@@ -74,18 +75,34 @@ export const usePostStore = defineStore("post", () => {
     listData.value[0].comments += 1;
   };
 
+  const searchPosts = async (keyWord) => {
+    // const posts = await loadPosts("filters[description][$contains]=" + keyWord);
+    searchResult.value = [
+      {
+        id: Math.random(),
+        // image: URL.createObjectURL(image),
+        // description,
+        comments: 0,
+        isLikedByMe: false,
+        isFavoredByMe: false,
+      },
+    ];
+  };
+
   return {
     uploadedData,
     listData,
     myPosts,
+    searchResult,
+    isLike,
+    isFavorite,
     uploadPost,
     loadPost,
     likePost,
-    isLike,
-    isFavorite,
     favoritePost,
     showDetail,
     hideDetail,
     increaseCommentCount,
+    searchPosts,
   };
 });
