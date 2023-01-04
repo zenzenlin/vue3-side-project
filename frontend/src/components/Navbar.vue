@@ -4,7 +4,7 @@
       <img src="../assets/logo.svg" alt="" />
     </router-link>
     <div class="searchInput">
-      <input type="text" />
+      <input type="text" @change="searchPosts" />
       <TheIcon icon="search" />
     </div>
     <div class="navItems">
@@ -19,15 +19,20 @@
         <TheAvatar
           :width="42"
           :height="42"
+          :src="user.avatar"
           style="cursor: pointer"
-          @click="profileMenu = !profileMenu"
+          @click="profileMenuShow = !profileMenuShow"
         />
-        <div class="dropdownMenu">
-          <ul class="profileMenu" v-if="profileMenu">
-            <router-link tag="li" to="/profile" @click="profileMenu = false">
+        <div v-show="profileMenuShow" class="dropdownMenu">
+          <ul class="profileMenu">
+            <router-link
+              tag="li"
+              to="/profile"
+              @click="profileMenuShow = false"
+            >
               個人主頁
             </router-link>
-            <li @click="profileMenu = false">退出</li>
+            <li @click="logout">退出</li>
           </ul>
         </div>
       </div>
@@ -39,13 +44,35 @@
 import TheIcon from "./TheIcon.vue";
 import TheAvatar from "../components/TheAvatar.vue";
 import { useUserStore } from "../stores/user.js";
-import { ref } from "vue";
+import { usePostStore } from "../stores/post.js";
+import { useRouter } from "vue-router";
+import { ref, computed } from "vue";
 
+const router = useRouter();
 const userStore = useUserStore();
-const profileMenu = ref(false);
+const postStore = usePostStore();
+const user = computed(() => userStore.user);
+
+const profileMenuShow = ref(false);
+
+async function searchPosts(e) {
+  await postStore.searchPosts(e.target.value);
+  router.push({
+    name: "SearchResult",
+    params: {
+      term: e.target.value,
+    },
+  });
+}
 
 function publishPost() {
   userStore.changeShowPostModal(true);
+}
+
+async function logout() {
+  profileMenuShow.value = false;
+  await userStore.logoutUser();
+  router.push({ name: "Login" });
 }
 </script>
 
