@@ -1,17 +1,21 @@
 <template>
   <div>
     <div class="profileContainer">
-      <TheAvatar :width="186" :height="186" :src="user.avatar" />
+      <TheAvatar
+        :width="186"
+        :height="186"
+        :src="`http://localhost:1337${user?.avatar}`"
+      />
       <div class="profile">
         <p class="name">
-          <span>{{ user.name || "白爛貓" }}</span
+          <span>{{ user?.name }}</span
           ><router-link to="/profile_edit">編輯個人資料</router-link>
         </p>
-        <p class="handle">@{{ user.username || "lanlancat" }}</p>
+        <p class="handle">@{{ user?.username }}</p>
         <div class="description">
-          <pre>{{ user.intro || "白爛貓白爛貓白爛貓" }}</pre>
+          <pre>{{ user?.intro }}</pre>
         </div>
-        <p class="website">{{ user.website || "https://lanlancat.com" }}</p>
+        <p class="website">{{ user?.website }}</p>
       </div>
     </div>
     <div class="tabs">
@@ -27,7 +31,7 @@
     </div>
     <div class="tabContent">
       <p>{{ myPosts[currentTab]?.length || 0 }} 篇貼文</p>
-      <div v-if="myPosts[currentTab].length" class="posts">
+      <div v-if="myPosts[currentTab]?.length" class="posts">
         <img
           v-for="(post, index) in myPosts[currentTab]"
           :key="index"
@@ -36,21 +40,24 @@
         />
       </div>
     </div>
+    <PostUpload v-if="showPostModal" />
   </div>
 </template>
 
 <script setup>
 import TheIcon from "../components/TheIcon.vue";
 import TheAvatar from "../components/TheAvatar.vue";
-import { loadPostByMe } from "../apis/post.js";
+import PostUpload from "../components/PostUpload.vue";
 import { useUserStore } from "../stores/user.js";
 import { usePostStore } from "../stores/post.js";
-import { watch, computed, ref, reactive } from "vue";
+import { watch, computed, ref, reactive, onMounted } from "vue";
 
 const userStore = useUserStore();
 const postStore = usePostStore();
+
 const user = computed(() => userStore.user);
 const myPosts = computed(() => postStore.myPosts);
+const showPostModal = computed(() => userStore.showPostModal);
 const tabs = [
   { label: "我的", icon: "posts" },
   { label: "讚過", icon: "like" },
@@ -58,11 +65,19 @@ const tabs = [
 ];
 const currentTab = ref(0);
 
-watch(currentTab, async () => {
-  console.log(myPosts.value);
-  if (!myPosts.value[currentTab.value].length) {
-    myPosts.value[currentTab.value] = await loadPostByMe();
-  }
+// 監聽 currentTab，載入分頁相關貼文
+watch(
+  currentTab,
+  async () => {
+    if (!myPosts.value[currentTab.value].length) {
+      await postStore.loadMyPosts(currentTab.value);
+    }
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  userStore.getUserInfo();
 });
 </script>
 

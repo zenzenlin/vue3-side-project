@@ -41,12 +41,13 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const isLogin = ref(true);
-
 const email = ref("");
 const password = ref("");
 const username = ref("");
 const agreetmentChecked = ref(false);
-
+/**
+ * 註冊
+ */
 async function submitAction() {
   if (!agreetmentChecked.value) {
     alert("請勾選協議");
@@ -62,6 +63,9 @@ async function submitAction() {
   router.replace("/");
 }
 
+/**
+ * 登入
+ */
 async function login() {
   await userStore.loginUser({
     email: email.value,

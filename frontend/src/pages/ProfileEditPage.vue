@@ -2,7 +2,11 @@
   <div>
     <h2 class="title">編輯個人資料</h2>
     <div class="changeAvatar">
-      <TheAvatar :width="48" :height="48" :src="profileData.avatar" />
+      <TheAvatar
+        :width="48"
+        :height="48"
+        :src="`http://localhost:1337${profileData.avatar}`"
+      />
       <TheButton>修改頭像</TheButton>
       <input type="file" class="inputFile" @change="uploadAvatar" />
     </div>
@@ -56,20 +60,20 @@ const userStore = useUserStore();
 const router = useRouter();
 const user = computed(() => userStore.user);
 const profileData = reactive({
-  avatar: user.value?.avatar || "",
-  username: user.value?.username || "",
-  name: user.value?.name || "",
-  intro: user.value?.intro || "",
-  mobilePhone: user.value?.mobilePhone || "",
-  gender: user.value?.gender || "",
-  website: user.value?.website || "",
+  avatar: user.value?.avatar,
+  username: user.value?.username,
+  name: user.value?.name,
+  intro: user.value?.intro,
+  mobilePhone: user.value?.mobilePhone,
+  gender: user.value?.gender,
+  website: user.value?.website,
 });
 
 async function uploadAvatar(e) {
   const file = e.target.files[0];
-  // const url = await uploadFile(file);
-  const url = URL.createObjectURL(file);
-  profileData.avatar = url;
+  const url = await uploadFile(file);
+  // const url = URL.createObjectURL(file);
+  profileData.avatar = `http://localhost:1337${url}`;
 }
 
 async function updateUser() {

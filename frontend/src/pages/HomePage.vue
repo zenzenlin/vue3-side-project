@@ -1,7 +1,11 @@
 <template>
   <div>
     <PostList>
-      <PostItem v-for="(list, index) in listData" :data="list" :key="index" />
+      <PostItem
+        v-for="postItem in postData"
+        :data="postItem"
+        :key="postItem.id"
+      />
     </PostList>
     <PostDetails v-if="showPostDetail" />
     <PostUpload v-if="showPostModal" />
@@ -15,11 +19,16 @@ import PostDetails from "../components/PostDetails.vue";
 import PostUpload from "../components/PostUpload.vue";
 import { useUserStore } from "../stores/user.js";
 import { usePostStore } from "../stores/post.js";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 const userStore = useUserStore();
 const postStore = usePostStore();
+
 const showPostModal = computed(() => userStore.showPostModal);
 const showPostDetail = computed(() => userStore.showPostDetail);
-const listData = computed(() => postStore.listData);
+const postData = computed(() => postStore.listData);
+
+onMounted(() => {
+  postStore.loadAllPost();
+});
 </script>
