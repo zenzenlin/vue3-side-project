@@ -13,7 +13,7 @@ import { getJwtToken } from "../apis/auth";
  */
 export async function request(
   url,
-  { method = "GET", headers, body, auth = true } = {}
+  { method = "GET", body, headers, auth = true } = {}
 ) {
   const res = await fetch(url, {
     method,

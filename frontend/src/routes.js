@@ -49,4 +49,5 @@ router.beforeEach((to) => {
     return { name: "Home" };
   }
 });
+
 export { router };
