@@ -1,4 +1,3 @@
-before 中只包含后台代码，前端需要自己实现
 
 後台運行方式：
 ```bash
@@ -16,7 +15,7 @@ yarn dev
 http://localhost:1337
 
 前端地址：
-http://localhost:3000
+http://localhost:5173
 
 後台管理用户/密碼
 admin@test.com/Abc-123456
