@@ -2,7 +2,7 @@
   <TheModal @close="closeModal()">
     <div class="postUpload">
       <label class="upload">
-        <img v-if="uplodeImg" :src="uplodeImg" class="preview" />
+        <img v-if="imageObjUrl" :src="imageObjUrl" class="preview" />
         <TheIcon v-else icon="upload-image" />
         <input
           type="file"
@@ -29,28 +29,39 @@ import TheModal from "./TheModal.vue";
 import TheButton from "./TheButton.vue";
 import { useUserStore } from "../stores/user.js";
 import { usePostStore } from "../stores/post.js";
+import { useRouter } from "vue-router";
 import { ref } from "vue";
 
+const router = useRouter();
 const userStore = useUserStore();
 const postStore = usePostStore();
-const uplodeImg = ref("");
-const image = ref(null);
-const description = ref("");
 
+const image = ref(null);
+const imageObjUrl = ref("");
+const description = ref("");
+/**
+ * 關閉彈窗
+ */
 function closeModal() {
   userStore.changeShowPostModal(false);
 }
-
+/**
+ * 上傳圖片
+ */
 function handleImgUpload(e) {
   const imgFile = e.target.files[0];
   if (imgFile) {
-    uplodeImg.value = URL.createObjectURL(imgFile);
+    // 設定路徑讓 imageObjUrl 存取並預覽
+    imageObjUrl.value = URL.createObjectURL(imgFile);
     image.value = imgFile;
   }
 }
-
+/**
+ * 發布貼文
+ */
 function publishPost() {
   postStore.uploadPost({ image: image.value, description: description.value });
+  router.push({ name: "Home" });
 }
 </script>
 

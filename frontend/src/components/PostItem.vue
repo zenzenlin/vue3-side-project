@@ -5,24 +5,24 @@
       width="100%"
       height="100%"
       style="background: #eee"
-      @click="postStore.showDetail()"
+      @click="postStore.showDetail(data.id)"
     />
     <div class="postInfo">
       <div class="postMeta">
-        <TheAvatar :src="data?.user?.avatar" />
+        <TheAvatar :src="formatAvatar(data?.user?.avatar)" />
         <span>{{ data?.user?.name || "Author" }}</span>
         <span class="postPubDate">
           {{ dateToRelative(data?.publishedAt) || "12 hours ago published" }}
         </span>
         <PostActions
-          :likes="data?.likes"
+          :likes="data?.liked_bies"
           :comments="data?.comments"
-          :favors="data?.favors"
-          :isLikedByMe="data?.isLikedByMe"
-          :isFavoredByMe="data?.isFavoredByMe"
-          @likeClick="postStore.likePost(data.id)"
-          @favorClick="postStore.favoritePost(data.id)"
-          @commentsClick="postStore.showDetail()"
+          :favors="data?.favored_bies"
+          :isLikedByMe="data?.likedByMe"
+          :isFavoredByMe="data?.favoredByMe"
+          @likeClick="postStore.toggleLike(data.id)"
+          @favorClick="postStore.toggleFavorite(data.id)"
+          @commentsClick="postStore.showDetail(data.id)"
         />
       </div>
       <div class="postDesc">
@@ -39,6 +39,13 @@ import { usePostStore } from "../stores/post.js";
 import { dateToRelative } from "../utils/date.js";
 
 const postStore = usePostStore();
+
+function formatAvatar(avatar) {
+  if (avatar === null) {
+    return;
+  }
+  return `http://localhost:1337${avatar.split("?")[0]}`;
+}
 
 defineProps({
   data: {

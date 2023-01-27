@@ -1,34 +1,38 @@
 <template>
   <TheModal @close="postStore.hideDetail()">
     <div class="postDetails">
-      <img class="postImage" :src="listData.image" />
+      <img class="postImage" :src="listData?.image" />
       <div class="postMeta">
         <div class="author">
           <TheAvatar :src="listData?.user?.image" />
-          <span>{{ listData?.user?.name || "Author" }}</span>
+          <span>{{ listData?.user?.name }}</span>
         </div>
-        <pre class="postDesc"
-          >{{ listData.listData }}
+        <pre class="postDesc">
+          {{ listData?.description }}
         </pre>
         <div class="comments">
           <div class="comment" v-for="item in comments">
-            <TheAvatar :src="item?.user?.avatar" />
-            <span class="user">{{ item?.user || "USER" }}</span>
-            <span class="commentDate">{{ item?.commentDate || "1d" }}</span>
-            <p class="commentContent">{{ item?.content || "GOOD!" }}</p>
+            <TheAvatar :src="formatAvatar(item?.user?.avatar)" />
+            <span class="user">{{ item?.user?.name }}</span>
+            <span class="commentDate">
+              {{ dateToRelative(item?.pubDate) }}
+            </span>
+            <p class="commentContent">{{ item?.content }}</p>
           </div>
         </div>
         <div class="actions">
           <PostActions
-            :likes="listData?.likes"
+            :likes="listData?.liked_bies"
             :comments="listData?.comments"
-            :favors="listData?.favors"
-            :isLikedByMe="listData?.isLikedByMe"
-            :isFavoredByMe="listData?.isFavoredByMe"
-            @likeClick="postStore.likePost('post.id')"
-            @favorClick="postStore.favoritePost('post.id')"
+            :favors="listData?.favored_bies"
+            :isLikedByMe="listData?.likedByMe"
+            :isFavoredByMe="listData?.favoredByMe"
+            @likeClick="postStore.toggleLike(listData.id)"
+            @favorClick="postStore.toggleFavorite(listData.id)"
           />
-          <span class="postPubDate">12h</span>
+          <span class="postPubDate">
+            {{ dateToRelative(listData?.publishedAt) }}
+          </span>
           <input
             type="text"
             name="comment"
@@ -37,7 +41,10 @@
             class="commentInput"
             placeholder="寫個評論吧"
           />
-          <button class="commentPubBtn" @click="addComment(content, 'post.id')">
+          <button
+            class="commentPubBtn"
+            @click="addComment(content, listData.id)"
+          >
             發布
           </button>
         </div>
@@ -51,20 +58,34 @@ import TheIcon from "./TheIcon.vue";
 import TheAvatar from "./TheAvatar.vue";
 import PostActions from "./PostActions.vue";
 import TheModal from "./TheModal.vue";
+import { dateToRelative } from "../utils/date.js";
 import { usePostStore } from "../stores/post.js";
 import { useCommentStore } from "../stores/comment.js";
 import { ref, computed } from "vue";
 
 const postStore = usePostStore();
 const commentStore = useCommentStore();
-const listData = computed(() => postStore.listData[0]);
+
+const listData = computed(() =>
+  postStore.listData.find(({ id }) => id === postStore.postDetailId)
+);
 const comments = computed(() => commentStore.commentList);
 const content = ref("");
-
-const addComment = (content, postId) => {
-  commentStore.addComment({ content, postId });
-  content.value = "";
-};
+/**
+ * 發布評論
+ */
+function addComment(content, postId) {
+  commentStore.addComment({ content, postId: postId });
+}
+/**
+ * 轉換頭像路徑
+ */
+function formatAvatar(avatar) {
+  if (avatar === null) {
+    return;
+  }
+  return `http://localhost:1337${avatar.split("?")[0]}`;
+}
 </script>
 
 <style lang="scss" scoped>

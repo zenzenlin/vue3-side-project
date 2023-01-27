@@ -3,32 +3,26 @@
     <TheIcon
       icon="like"
       :fill="isLikedByMe ? '#FF3C3C' : 'none'"
-      stroke="#000"
+      :stroke="isLikedByMe ? '#FF3C3C' : '#000'"
       @click="$emit('likeClick')"
-    /><span>{{ likes || "1.5W" }}</span>
+    /><span>{{ likes }}</span>
     <TheIcon
       icon="comment"
       fill="none"
       stroke="#000"
       @click="$emit('commentsClick')"
-    /><span>{{ comments || "1W" }}</span>
+    /><span>{{ comments }}</span>
     <TheIcon
       icon="favorite"
       :fill="isFavoredByMe ? '#FFD12E' : 'none'"
-      stroke="#000"
+      :stroke="isFavoredByMe ? '#FFD12E' : '#000'"
       @click="$emit('favorClick')"
-    /><span>{{ favors || "99W" }}</span>
+    /><span>{{ favors }}</span>
   </div>
 </template>
 
 <script setup>
 import TheIcon from "./TheIcon.vue";
-import { usePostStore } from "../stores/post.js";
-import { computed } from "vue";
-
-const postStore = usePostStore();
-const isLike = computed(() => postStore.isLike);
-const isFavorite = computed(() => postStore.isFavorite);
 
 defineProps({
   likes: Number,
@@ -45,7 +39,7 @@ defineEmits(["likeClick", "commentsClick", "favorClick"]);
 .postActions {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  justify-content: center;
+  justify-items: center;
   justify-self: end;
   column-gap: 16px;
   row-gap: 4px;

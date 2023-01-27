@@ -11,7 +11,7 @@
       <router-link to="/">
         <TheIcon icon="home" />
       </router-link>
-      <button @click="publishPost()">
+      <button @click="openPostModal()">
         <TheIcon icon="publish" />
       </button>
       <!-- dropdown -->
@@ -19,7 +19,7 @@
         <TheAvatar
           :width="42"
           :height="42"
-          :src="user.avatar"
+          :src="`http://localhost:1337${user.avatar}`"
           style="cursor: pointer"
           @click="profileMenuShow = !profileMenuShow"
         />
@@ -46,15 +46,17 @@ import TheAvatar from "../components/TheAvatar.vue";
 import { useUserStore } from "../stores/user.js";
 import { usePostStore } from "../stores/post.js";
 import { useRouter } from "vue-router";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 const postStore = usePostStore();
+
 const user = computed(() => userStore.user);
-
 const profileMenuShow = ref(false);
-
+/**
+ * 搜尋貼文
+ */
 async function searchPosts(e) {
   await postStore.searchPosts(e.target.value);
   router.push({
@@ -64,16 +66,24 @@ async function searchPosts(e) {
     },
   });
 }
-
-function publishPost() {
+/**
+ * 開啟貼文彈窗
+ */
+function openPostModal() {
   userStore.changeShowPostModal(true);
 }
-
+/**
+ * 登出
+ */
 async function logout() {
   profileMenuShow.value = false;
   await userStore.logoutUser();
   router.push({ name: "Login" });
 }
+
+onMounted(() => {
+  userStore.getUserInfo();
+});
 </script>
 
 <style lang="scss" scoped>
