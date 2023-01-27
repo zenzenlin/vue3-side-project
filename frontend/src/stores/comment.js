@@ -8,28 +8,23 @@ export const useCommentStore = defineStore("comment", () => {
   const commentList = ref([]);
 
   const addComment = async ({ content, postId }) => {
-    // await createComment(content, postId);
-    loadComments(content);
+    await createComment(content, postId);
+    loadAllComments(postId);
     postStore.increaseCommentCount(postId);
   };
 
-  const loadComments = async (content) => {
-    // const loadComments = async (postId) => {
-    // const comments = await loadComment(postId)
-
-    // initializeComment(comments);
-    initializeComment(content);
+  const loadAllComments = async (postId) => {
+    const comments = await loadComment(postId);
+    initializeComment(comments);
   };
 
   const initializeComment = (comments) => {
-    console.log(comments);
-    commentList.value.push({ content: comments });
+    commentList.value = comments;
   };
 
   return {
     commentList,
     addComment,
-    loadComments,
-    initializeComment,
+    loadAllComments,
   };
 });

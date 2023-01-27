@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { getUser, register, login, saveUser, logout } from "../apis/auth.js";
+import { getUser, register, login, logout } from "../apis/auth.js";
 import { changeUser } from "../apis/user.js";
 
 export const useUserStore = defineStore("user", () => {
@@ -9,18 +9,23 @@ export const useUserStore = defineStore("user", () => {
   const showPostDetail = ref(false);
 
   const registerUser = ({ email, username, password }) => {
-    const user = register(email, username, password);
-    user.value = user;
+    const userInfo = register(email, username, password);
+    user.value = userInfo;
   };
 
   const loginUser = ({ email, password }) => {
-    const user = login(email, password);
-    user.value = user;
+    const userInfo = login(email, password);
+    user.value = userInfo;
   };
 
   const logoutUser = () => {
     logout();
     user.value = {};
+  };
+
+  const getUserInfo = () => {
+    const userInfo = getUser();
+    user.value = userInfo;
   };
 
   const changeShowPostModal = (bool) => {
@@ -31,28 +36,9 @@ export const useUserStore = defineStore("user", () => {
     showPostDetail.value = bool;
   };
 
-  const uploadUser = (uploadedData) => {
-    // const uploadedUser = await changeUser(user)
-    // user.value = uploadedUser
-
-    const updateUser = {
-      avatar: uploadedData.avatar,
-      blocked: false,
-      confirmed: true,
-      createdAt: new Date(),
-      email: "",
-      gender: uploadedData.gender,
-      id: Math.random(),
-      intro: uploadedData.intro,
-      mobilePhone: uploadedData.mobilePhone,
-      name: uploadedData.name,
-      provider: "local",
-      updatedAt: new Date(),
-      username: uploadedData.username,
-      website: uploadedData.website,
-    };
-    user.value = updateUser;
-    saveUser(updateUser);
+  const uploadUser = async (profileData) => {
+    const userInfo = await changeUser(profileData);
+    user.value = userInfo;
   };
 
   return {
@@ -65,5 +51,6 @@ export const useUserStore = defineStore("user", () => {
     changeShowPostModal,
     changeShowPostDetail,
     uploadUser,
+    getUserInfo,
   };
 });
